@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Bebas Neue', 'Impact', sans-serif;
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --color-ink: #0b0b0f;
+  --color-panel: #15151c;
+  --color-panel-2: #1d1d27;
+  --color-line: #2a2a38;
+  --color-money: #22c55e;
+  --color-clean: #38bdf8;
+  --color-respect: #f59e0b;
+  --color-legend: #c084fc;
+  --color-heat: #ef4444;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #1b2a1f 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, #2a1414 0%, transparent 55%),
+    var(--color-ink);
+  color: #e7e7ee;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.stripes {
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 8px, transparent 8px 16px);
+  background-size: 22px 22px;
+  animation: stripes 0.8s linear infinite;
+}
+
+@keyframes stripes {
+  to {
+    background-position: 22px 0;
+  }
+}
+
+.siren {
+  animation: siren 0.6s steps(2) infinite;
+}
+
+@keyframes siren {
+  0% {
+    box-shadow: inset 0 0 120px 20px rgba(239, 68, 68, 0.55);
+  }
+  100% {
+    box-shadow: inset 0 0 120px 20px rgba(59, 130, 246, 0.55);
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #2a2a38;
+  border-radius: 99px;
+}
+
+/* Évite que les textes tronqués élargissent les colonnes de grille */
+.grid > * {
+  min-width: 0;
+}
