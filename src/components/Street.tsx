@@ -273,7 +273,7 @@ export function Street() {
   return (
     <div>
       <SectionTitle sub="Le boulot à la main : ça rapporte, ça chauffe un peu, et ça forge la légende.">Le terrain</SectionTitle>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 @lg:grid-cols-2">
         <Clicker />
         <div className="flex flex-col gap-3">
           <Orders />

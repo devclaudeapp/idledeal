@@ -16,7 +16,7 @@ export function Corruption() {
   return (
     <div>
       <SectionTitle sub="Payé en argent propre. Chaque officiel réduit la chaleur générée et accélère son refroidissement.">Corruption</SectionTitle>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         {CORRUPTION.map((c) => {
           const owned = g.corruption.includes(c.id)
           return (
@@ -53,7 +53,7 @@ export function Upgrades() {
   return (
     <div>
       <SectionTitle sub="Investissements payés en argent propre.">Améliorations</SectionTitle>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-2 @sm:grid-cols-2 @2xl:grid-cols-3">
         {available.slice(0, 18).map((u) => (
           <Card key={u.id} className="flex items-center gap-3 p-2.5">
             <GiUpgrade className="shrink-0 text-clean" size={26} />
@@ -88,7 +88,7 @@ export function Achievements() {
   return (
     <div>
       <SectionTitle sub={`${g.achievements.length}/${ACHIEVEMENTS.length} débloqués · chacun donne +${pct(ACHIEVEMENT_BONUS)} de revenus.`}>Succès</SectionTitle>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 @sm:grid-cols-3 @2xl:grid-cols-4">
         {ACHIEVEMENTS.map((a) => {
           const got = g.achievements.includes(a.id)
           return (

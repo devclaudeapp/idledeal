@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { useState } from 'react'
 import { conquerDistrict } from '../game/actions'
 import { BUSINESSES } from '../game/data/businesses'
 import { DISTRICTS, DISTRICT_BY_ID } from '../game/data/districts'
@@ -7,6 +6,7 @@ import { fmt, money } from '../game/num'
 import { act, useGame } from '../game/store'
 import { DISTRICT_ICONS } from '../ui/icons'
 import { play } from '../ui/sound'
+import { useUi } from '../ui/uiStore'
 import { Btn, Card, SectionTitle } from './ui'
 
 function bonuses(id: string): string[] {
@@ -22,14 +22,19 @@ function bonuses(id: string): string[] {
 
 export function Territory() {
   const g = useGame((s) => s.game)
-  const [sel, setSel] = useState(DISTRICTS.find((d) => !g.districts.includes(d.id))?.id ?? 'lilas')
+  const selected = useUi((s) => s.selectedDistrict)
+  const sel = selected ?? DISTRICTS.find((d) => !g.districts.includes(d.id))?.id ?? 'lilas'
+  const setSel = (id: string) => {
+    useUi.getState().selectDistrict(id)
+    useUi.getState().setFocus(`district:${id}`)
+  }
   const d = DISTRICT_BY_ID[sel]
   const owned = g.districts.includes(sel)
 
   return (
     <div>
       <SectionTitle sub="Gagne du respect en braquant, livrant et en gérant les crises, puis prends la ville quartier par quartier.">Port-Sombre</SectionTitle>
-      <div className="grid gap-3 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-3 @2xl:grid-cols-[1fr_320px]">
         <div
           className="relative grid grid-cols-4 grid-rows-2 gap-2 rounded-xl border border-line p-2"
           style={{

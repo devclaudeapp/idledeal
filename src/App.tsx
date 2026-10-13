@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import confetti from 'canvas-confetti'
 import { motion } from 'motion/react'
-import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react'
+import { Component, lazy, Suspense, useEffect, type ComponentType, type ReactNode } from 'react'
 import type { IconType } from 'react-icons'
 import {
-  GiChart, GiCityCar, GiCog, GiCrownedSkull, GiHandcuffs, GiPistolGun, GiPowderBag, GiSoap, GiTrophy,
+  GiChart, GiCityCar, GiModernCity, GiCog, GiCrownedSkull, GiHandcuffs, GiPistolGun, GiPowderBag, GiSoap, GiTrophy,
   GiUpgrade, GiWalkingBoot,
 } from 'react-icons/gi'
 import { Toaster, toast } from 'sonner'
@@ -27,9 +27,11 @@ import { money } from './game/num'
 import { save, useGame } from './game/store'
 import { useHistory } from './ui/history'
 import { play, setMuted } from './ui/sound'
+import { useUi } from './ui/uiStore'
 
-// Recharts est lourd : chargé seulement à l'ouverture de l'onglet Stats
+// Recharts et three.js sont lourds : chargés à la demande
 const Stats = lazy(() => import('./components/Stats').then((m) => ({ default: m.Stats })))
+const City = lazy(() => import('./three/City'))
 
 interface Tab {
   id: string
@@ -141,18 +143,79 @@ function useBadges(): Record<string, boolean> {
   }
 }
 
+/** Si WebGL plante, on retombe sur l'interface 2D sans casser la partie. */
+class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  componentDidCatch() {
+    toast.error('La 3D n’a pas pu démarrer sur cet appareil. Interface 2D activée.')
+    useUi.getState().setEnable3d(false)
+  }
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
+function CityHud() {
+  const panelOpen = useUi((s) => s.panelOpen)
+  const focus = useUi((s) => s.focus)
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex justify-center gap-2 px-2 md:bottom-4">
+      <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-line bg-ink/80 p-1.5 text-xs backdrop-blur">
+        <button className="flex items-center gap-1 rounded-lg px-2 py-1 text-zinc-300 hover:bg-white/10" onClick={() => useUi.getState().goHome()}>
+          <GiModernCity size={16} /> Vue d’ensemble
+        </button>
+        <button
+          className="hidden items-center gap-1 rounded-lg px-2 py-1 text-zinc-300 hover:bg-white/10 md:flex"
+          onClick={() => useUi.getState().setPanelOpen(!panelOpen)}
+        >
+          {panelOpen ? 'Masquer le panneau' : 'Afficher le panneau'}
+        </button>
+        <span className="hidden px-1 text-zinc-500 lg:inline">
+          {focus ? 'Clic dans le vide pour dézoomer' : 'Clique un bâtiment · glisser pour tourner · molette pour zoomer'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   useGameLoop()
   useGameEvents()
-  const [tab, setTab] = useState('terrain')
+  const tab = useUi((s) => s.tab)
+  const setTab = useUi((s) => s.setTab)
+  const panelOpen = useUi((s) => s.panelOpen)
+  const enable3d = useUi((s) => s.enable3d)
   const badges = useBadges()
   const View = TABS.find((t) => t.id === tab)!.view
 
   return (
-    <div className="min-h-screen pb-20 md:pb-6">
+    <div className={clsx('min-h-screen pb-20 md:pb-0', enable3d && 'md:flex md:h-screen md:flex-col md:overflow-hidden')}>
       <Header />
-      <div className="mx-auto flex max-w-6xl gap-4 px-3 pt-3">
-        <nav className="sticky top-32 hidden h-fit w-44 shrink-0 flex-col gap-1 md:flex">
+      {enable3d && (
+        <div className="relative h-[42vh] border-b border-line md:fixed md:inset-0 md:h-auto md:border-0">
+          <SceneBoundary>
+            <Suspense fallback={<div className="grid h-full place-items-center text-sm text-zinc-500">Chargement de Port-Sombre…</div>}>
+              <City />
+            </Suspense>
+          </SceneBoundary>
+          <CityHud />
+        </div>
+      )}
+      <div
+        className={clsx(
+          'relative z-10 mx-auto flex w-full gap-4 px-3 pt-3',
+          enable3d ? 'md:pointer-events-none md:min-h-0 md:max-w-none md:flex-1 md:pb-20' : 'max-w-6xl',
+        )}
+      >
+        <nav
+          className={clsx(
+            'hidden h-fit w-44 shrink-0 flex-col gap-1 md:flex md:pointer-events-auto',
+            enable3d ? 'rounded-xl border border-line bg-ink/75 p-1.5 backdrop-blur' : 'sticky top-32',
+          )}
+        >
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -168,7 +231,14 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <main className="min-w-0 flex-1">
+        <main
+          className={clsx(
+            '@container min-w-0 flex-1',
+            enable3d &&
+              'md:pointer-events-auto md:ml-auto md:w-[min(580px,44vw)] md:flex-none md:overflow-y-auto md:rounded-xl md:border md:border-line md:bg-ink/80 md:p-4 md:backdrop-blur-md scrollbar-thin',
+            enable3d && !panelOpen && 'md:hidden',
+          )}
+        >
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }}>
             <Suspense fallback={<div className="p-6 text-zinc-500">Chargement…</div>}>
               <View />

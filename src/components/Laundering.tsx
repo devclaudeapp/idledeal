@@ -53,7 +53,7 @@ export function Laundering() {
         </div>
       </Card>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         {FRONTS.map((f) => {
           const lvl = g.fronts[f.id] ?? 0
           const n = resolveBuyAmount(g, f.baseCost, f.costMult, lvl, g.cash)

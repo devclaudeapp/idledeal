@@ -29,7 +29,7 @@ export function Stats() {
   return (
     <div>
       <SectionTitle sub="Graphiques de la session en cours (un point toutes les 5 s).">Statistiques</SectionTitle>
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         <Card>
           <div className="mb-1 text-sm font-semibold text-money">Revenu passif (€/s)</div>
           <div className="h-48">
@@ -64,8 +64,8 @@ export function Stats() {
             </ResponsiveContainer>
           </div>
         </Card>
-        <Card className="lg:col-span-2">
-          <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+        <Card className="@2xl:col-span-2">
+          <dl className="grid gap-x-6 gap-y-1 text-sm @sm:grid-cols-2">
             {rows.map(([k, v]) => (
               <div key={k} className="flex justify-between border-b border-line/60 py-1">
                 <dt className="text-zinc-400">{k}</dt>
