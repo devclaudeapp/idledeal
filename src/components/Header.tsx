@@ -26,7 +26,7 @@ export function Header() {
   const heatColor = g.heat > 80 ? 'bg-heat' : g.heat > 50 ? 'bg-orange-500' : 'bg-yellow-500'
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-ink/85 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line bg-ink/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-col gap-1.5 px-3 py-1.5 sm:gap-2 sm:py-2">
         <div className="flex items-center justify-between gap-3">
           <h1 className="whitespace-nowrap font-display text-2xl leading-none tracking-wider sm:text-3xl">

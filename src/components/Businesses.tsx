@@ -23,7 +23,7 @@ export function Businesses() {
         <SectionTitle sub="Clique sur l’icône pour lancer un cycle. Engage un lieutenant pour que ça tourne tout seul.">Business</SectionTitle>
         <BuyAmountPicker />
       </div>
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         {BUSINESSES.map((def) => {
           const b = g.businesses[def.id]
           const Icon = BUSINESS_ICONS[def.id]

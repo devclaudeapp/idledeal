@@ -4,6 +4,7 @@ import { clearLocal, exportSave, importSave } from '../game/save'
 import { newGameState } from '../game/state'
 import { act, save, useGame } from '../game/store'
 import { setMuted } from '../ui/sound'
+import { useUi, type Quality } from '../ui/uiStore'
 import { Btn, Card, SectionTitle } from './ui'
 
 export const CREDITS: [string, string, string][] = [
@@ -25,19 +26,29 @@ export const CREDITS: [string, string, string][] = [
   ['ZzFX', 'KilledByAPixel/ZzFX', 'Sons procéduraux'],
   ['Fontsource', 'fontsource/fontsource', 'Polices Bebas Neue & Inter'],
   ['clsx', 'lukeed/clsx', 'Classes CSS'],
+  ['three.js', 'mrdoob/three.js', 'Moteur 3D'],
+  ['React Three Fiber', 'pmndrs/react-three-fiber', 'Rendu 3D en React'],
+  ['drei', 'pmndrs/drei', 'Caméra, textes 3D, étoiles, performances'],
+  ['camera-controls', 'yomotsu/camera-controls', 'Caméra orbitale animée'],
+  ['troika-three-text', 'protectwise/troika', 'Textes 3D'],
+  ['postprocessing', 'pmndrs/postprocessing', 'Bloom, vignette, tone mapping'],
+  ['react-postprocessing', 'pmndrs/react-postprocessing', 'Post-traitement en React'],
+  ['maath', 'pmndrs/maath', 'Utilitaires mathématiques 3D'],
   ['vite-plugin-pwa', 'vite-pwa/vite-plugin-pwa', 'Installable / hors-ligne'],
   ['Vitest', 'vitest-dev/vitest', 'Tests'],
 ]
 
 export function Options() {
   const muted = useGame((s) => s.game.muted)
+  const quality = useUi((s) => s.quality)
+  const enable3d = useUi((s) => s.enable3d)
   const [text, setText] = useState('')
   const [reset, setReset] = useState(false)
 
   return (
     <div>
       <SectionTitle>Options</SectionTitle>
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         <Card className="flex flex-col gap-3">
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -50,6 +61,18 @@ export function Options() {
             />
             Sons
           </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={enable3d} onChange={() => useUi.getState().setEnable3d(!enable3d)} />
+            Ville en 3D
+          </label>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-zinc-400">Graphismes</span>
+            {(['low', 'medium', 'high'] as Quality[]).map((q) => (
+              <Btn key={q} tone={quality === q ? 'money' : 'neutral'} disabled={!enable3d} onClick={() => useUi.getState().setQuality(q)}>
+                {{ low: 'Bas', medium: 'Moyen', high: 'Élevé' }[q]}
+              </Btn>
+            ))}
+          </div>
           <div className="flex flex-wrap gap-2">
             <Btn onClick={() => (save(), toast('Partie sauvegardée.'))}>Sauvegarder</Btn>
             <Btn
@@ -107,7 +130,7 @@ export function Options() {
         </Card>
         <Card>
           <div className="mb-2 font-semibold">Construit avec des projets open source</div>
-          <ul className="grid gap-1 text-sm sm:grid-cols-2">
+          <ul className="grid gap-1 text-sm @sm:grid-cols-2">
             {CREDITS.map(([name, repo, role]) => (
               <li key={repo}>
                 <a className="text-clean hover:underline" href={`https://github.com/${repo}`} target="_blank" rel="noreferrer">

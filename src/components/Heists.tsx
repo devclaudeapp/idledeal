@@ -40,7 +40,7 @@ export function Heists() {
       )}
 
       <h3 className="mb-2 font-display text-xl tracking-wide text-zinc-300">L’équipe</h3>
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mb-4 grid grid-cols-2 gap-2 @sm:grid-cols-3 @2xl:grid-cols-5">
         {ROLES.map((r) => {
           const lvl = g.crew[r.id]
           const cost = crewCost(g, r.id)
@@ -69,7 +69,7 @@ export function Heists() {
       </div>
 
       <h3 className="mb-2 font-display text-xl tracking-wide text-zinc-300">Les cibles</h3>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 @2xl:grid-cols-2">
         {HEISTS.map((h) => {
           const ok = heistRequirementsMet(g, h)
           const cd = g.heistCooldowns[h.id] ?? 0
